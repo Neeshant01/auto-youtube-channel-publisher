@@ -1,0 +1,5 @@
+{
+  "name": "Auto YouTube Channel Publisher",
+  "description": "Automate trending topic discovery, video creation, and daily YouTube publishing.",
+  "requestFramePermissions": ["camera", "microphone", "geolocation"]
+}
