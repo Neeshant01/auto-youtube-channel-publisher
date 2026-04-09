@@ -24,22 +24,24 @@ async function startServer() {
   app.use(cors());
   app.use(express.json());
   app.use(cookieParser());
-  app.use(
-    session({
-      secret: "auto-yt-secret",
-      resave: false,
-      saveUninitialized: true,
-      cookie: { secure: false, sameSite: "lax" }, // Set to true/none in production with HTTPS
-    })
-  );
-
   const cleanSecret = (val: string | undefined) => {
     if (!val) return "";
-    // Remove leading/trailing quotes, trim whitespace, and remove any non-printable characters
     return val.trim()
       .replace(/^["']|["']$/g, "")
-      .replace(/[\u200B-\u200D\uFEFF]/g, ""); // Remove zero-width spaces and other hidden characters
+      .replace(/[\u200B-\u200D\uFEFF]/g, "");
   };
+  const sessionSecret = cleanSecret(process.env.SESSION_SECRET) || "local-dev-session-secret";
+  app.use(
+    session({
+      secret: sessionSecret,
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      },
+    })
+  );
 
   const youtubeClientId = cleanSecret(process.env.YOUTUBE_CLIENT_ID || process.env.CLIENT_ID);
   const youtubeClientSecret = cleanSecret(process.env.YOUTUBE_CLIENT_SECRET || process.env.CLIENT_SECRET);
@@ -100,7 +102,7 @@ async function startServer() {
       console.error("- Client Secret:", youtubeClientSecret ? "PRESENT" : "MISSING");
       
       return res.status(500).json({ 
-        error: "YouTube API credentials are not properly configured. Please add valid YOUTUBE_CLIENT_ID and YOUTUBE_CLIENT_SECRET to the Secrets panel in AI Studio. Current values appear to be placeholders or missing." 
+        error: "YouTube API credentials are not properly configured. Add valid YOUTUBE_CLIENT_ID and YOUTUBE_CLIENT_SECRET values in your environment configuration." 
       });
     }
 

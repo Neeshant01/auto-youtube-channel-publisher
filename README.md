@@ -1,20 +1,66 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Auto YouTube Channel Publisher
 
-# Run and deploy your AI Studio app
+AI-assisted YouTube publishing workspace for trend discovery, script generation, metadata planning, and upload workflow experiments.
 
-This contains everything you need to run your app locally.
+## What This Project Does
 
-View your app in AI Studio: https://ai.studio/apps/35c72690-9e67-4be0-b69e-a2ae1167561e
+This project combines a React dashboard with an Express backend to help manage a YouTube content pipeline. It focuses on assisted workflows, not blind automation, so creators can review ideas, scripts, thumbnails, and metadata before publishing.
+
+## Key Features
+
+- Google sign-in and YouTube OAuth connection flow
+- Trend discovery helpers
+- Script generation with Gemini models
+- Metadata and thumbnail ideation workflow
+- Upload flow for YouTube publishing experiments
+- Firebase-backed auth and data layer using environment-based configuration
+
+## Tech Stack
+
+- React
+- TypeScript
+- Vite
+- Express
+- Firebase Auth and Firestore
+- Google Gemini API
+- YouTube Data API
+
+## Configuration
+
+Create a local `.env` file using `.env.example`.
+
+Required variables:
+
+- `YOUTUBE_CLIENT_ID`
+- `YOUTUBE_CLIENT_SECRET`
+- `SESSION_SECRET`
+- `GEMINI_API_KEY`
+- `APP_URL`
+- `FIREBASE_API_KEY`
+- `FIREBASE_AUTH_DOMAIN`
+- `FIREBASE_PROJECT_ID`
+- `FIREBASE_STORAGE_BUCKET`
+- `FIREBASE_MESSAGING_SENDER_ID`
+- `FIREBASE_APP_ID`
+
+Optional:
+
+- `FIREBASE_MEASUREMENT_ID`
+- `FIREBASE_DATABASE_ID`
 
 ## Run Locally
 
-**Prerequisites:**  Node.js
+```bash
+npm install
+npm run dev
+```
 
+Open `http://localhost:3000`.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Notes
+
+- This repository no longer includes project-specific Firebase JSON config files
+- Use your own Firebase project and YouTube API credentials
+- Review all generated output before publishing
+
+Built by Nishant Kumar

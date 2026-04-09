@@ -1,32 +1,37 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, setPersistence, browserLocalPersistence } from 'firebase/auth';
-import { getFirestore, collection, doc, getDoc, setDoc, onSnapshot, query, where, getDocs, getDocFromServer } from 'firebase/firestore';
+import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 
-// Import the Firebase configuration
-import firebaseConfig from '../../firebase-applet-config.json';
+const firebaseConfig = {
+  apiKey: process.env.FIREBASE_API_KEY || '',
+  authDomain: process.env.FIREBASE_AUTH_DOMAIN || '',
+  projectId: process.env.FIREBASE_PROJECT_ID || '',
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET || '',
+  messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
+  appId: process.env.FIREBASE_APP_ID || '',
+  measurementId: process.env.FIREBASE_MEASUREMENT_ID || '',
+};
 
-// Initialize Firebase SDK
+const firestoreDatabaseId = process.env.FIREBASE_DATABASE_ID || undefined;
+
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const db = firestoreDatabaseId ? getFirestore(app, firestoreDatabaseId) : getFirestore(app);
 export const auth = getAuth(app);
 
-// Set persistence to local to handle iframe issues better
 setPersistence(auth, browserLocalPersistence).catch((err) => {
-  console.error("Failed to set persistence:", err);
+  console.error('Failed to set persistence:', err);
 });
 
 export { signInWithPopup };
 export const googleProvider = new GoogleAuthProvider();
 
-// Add YouTube scopes
 googleProvider.addScope('https://www.googleapis.com/auth/youtube.upload');
 googleProvider.addScope('https://www.googleapis.com/auth/youtube.readonly');
 googleProvider.addScope('https://www.googleapis.com/auth/youtube.force-ssl');
 
-// Ensure the user is prompted for consent to these scopes
 googleProvider.setCustomParameters({
   prompt: 'select_account consent',
-  access_type: 'offline'
+  access_type: 'offline',
 });
 
 export enum OperationType {
@@ -54,7 +59,7 @@ export interface FirestoreErrorInfo {
       email: string | null;
       photoUrl: string | null;
     }[];
-  }
+  };
 }
 
 export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
@@ -70,13 +75,14 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
         providerId: provider.providerId,
         displayName: provider.displayName,
         email: provider.email,
-        photoUrl: provider.photoURL
-      })) || []
+        photoUrl: provider.photoURL,
+      })) || [],
     },
     operationType,
-    path
-  }
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
+    path,
+  };
+
+  console.error('Firestore Error:', JSON.stringify(errInfo));
   throw new Error(JSON.stringify(errInfo));
 }
 
@@ -84,9 +90,10 @@ async function testConnection() {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
   } catch (error) {
-    if(error instanceof Error && error.message.includes('the client is offline')) {
-      console.error("Please check your Firebase configuration. ");
+    if (error instanceof Error && error.message.includes('the client is offline')) {
+      console.error('Please check your Firebase environment configuration.');
     }
   }
 }
+
 testConnection();
